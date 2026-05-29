@@ -1,9 +1,12 @@
 import type { NextConfig } from 'next'
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://after-hours-sup5.onrender.com';
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,
+  env: {
+    NEXT_PUBLIC_BACKEND_URL: 'https://after-hours-sup5.onrender.com',
+  },
   async headers() {
     return [
       {
