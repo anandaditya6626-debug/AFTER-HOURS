@@ -1,12 +1,7 @@
 {
-  "experimentalServices": {
-    "frontend": {
-      "root": "frontend",
-      "routePrefix": "/"
-    },
-    "backend": {
-      "root": "backend",
-      "routePrefix": "/_backend"
-    }
-  }
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/.next",
+  "installCommand": "cd frontend && npm install",
+  "framework": "nextjs",
+  "ignoreCommand": ""
 }
