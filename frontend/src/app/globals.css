@@ -1,0 +1,328 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700;800&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #080808;
+  --bg-deep: #050505;
+  --bg-surface: #0d0d0d;
+  --surface: rgba(255,255,255,0.025);
+  --surface-hover: rgba(255,255,255,0.04);
+  --border: rgba(255,255,255,0.06);
+  --border-accent: rgba(255,46,46,0.3);
+  --accent: #FF2E2E;
+  --accent-dark: #8B0000;
+  --accent-glow: rgba(255,46,46,0.15);
+  --accent-dim: rgba(255,46,46,0.06);
+  --text: #F0F0F0;
+  --text-dim: #888888;
+  --text-muted: #444444;
+  --text-ghost: #1E1E1E;
+  --font-body: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-cinematic: 'Crimson Pro', Georgia, serif;
+  --grain-opacity: 0.04;
+  --scanline-opacity: 0.35;
+
+  /* ── Weather System ───────────────────────── */
+  --weather-grain: 0.035;
+  --weather-hue: 0;
+  --weather-saturation: 0%;
+  --weather-brightness: 1;
+  --weather-blur: 0;
+  --weather-contrast: 1;
+
+  /* ── Burnout System ───────────────────────── */
+  --burnout-level: 0;
+  --burnout-blur: 0;
+  --burnout-brightness: 1;
+
+  /* ── Heartbeat System ─────────────────────── */
+  --heartbeat-active: 0;
+  --heartbeat-opacity: 0;
+
+  /* ── Midnight Transformation ──────────────── */
+  --midnight-active: 0;
+
+  /* ── Dream Mode ───────────────────────────── */
+  --dream-active: 0;
+  --dream-float: 0;
+}
+
+/* ── Global Weather + Burnout Filter ─────────────────────────── */
+body {
+  filter:
+    brightness(calc(var(--weather-brightness) * var(--burnout-brightness)))
+    contrast(var(--weather-contrast))
+    blur(calc(var(--burnout-blur) * 1px))
+    hue-rotate(calc(var(--weather-hue) * 1deg))
+    saturate(calc(1 + var(--weather-saturation, 0)));
+  transition: filter 3s ease-in-out;
+}
+
+/* ── Heartbeat Pulse (global page effect) ────────────────────── */
+@keyframes heartbeat-vignette {
+  0%, 100% { box-shadow: inset 0 0 80px rgba(255,46,46,0); }
+  50% { box-shadow: inset 0 0 80px rgba(255,46,46,0.06); }
+}
+
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 9993;
+  opacity: var(--heartbeat-opacity, 0);
+  box-shadow: inset 0 0 120px rgba(255,46,46,0.08);
+  transition: opacity 0.1s;
+}
+
+/* ── Dream Mode Float Effect ─────────────────────────────────── */
+@keyframes dream-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-4px) rotate(0.3deg); }
+  50% { transform: translateY(2px) rotate(-0.2deg); }
+  75% { transform: translateY(-2px) rotate(0.1deg); }
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100%;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,46,46,0.2); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,46,46,0.4); }
+::selection { background: rgba(255,46,46,0.25); color: #fff; }
+input, button, textarea, select { font-family: var(--font-body); }
+a { color: inherit; text-decoration: none; }
+
+/* ── Film Grain ───────────────────────────────────────────────── */
+.grain-overlay {
+  position: fixed;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: calc(var(--grain-opacity) + var(--audio-flicker, 0) * 0.05);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 180px 180px;
+  animation: grain 0.5s steps(1) infinite;
+}
+
+@keyframes grain {
+  0%   { transform: translate(0, 0); }
+  10%  { transform: translate(-2%, -3%); }
+  20%  { transform: translate(-4%,  2%); }
+  30%  { transform: translate( 3%, -1%); }
+  40%  { transform: translate(-1%,  4%); }
+  50%  { transform: translate( 2%, -2%); }
+  60%  { transform: translate(-3%,  1%); }
+  70%  { transform: translate( 1%, -4%); }
+  80%  { transform: translate( 4%,  3%); }
+  90%  { transform: translate(-2%,  2%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* ── Scanlines ────────────────────────────────────────────────── */
+.scanlines-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.06) 2px,
+    rgba(0,0,0,0.06) 4px
+  );
+  opacity: calc(var(--scanline-opacity) + var(--audio-flicker, 0) * 0.1);
+}
+
+/* ── Glitch Animations ────────────────────────────────────────── */
+@keyframes glitch-text {
+  0%, 90%, 100% { text-shadow: none; transform: none; }
+  91% { transform: skewX(-1deg); text-shadow: 2px 0 #FF2E2E, -2px 0 #3498DB; }
+  93% { transform: skewX(1deg); text-shadow: -2px 0 #FF2E2E, 2px 0 #3498DB; }
+  95% { transform: none; text-shadow: 1px 0 #FF2E2E, -1px 0 #1ABC9C; }
+  97% { transform: none; text-shadow: none; }
+}
+
+@keyframes glitch-rgb {
+  0%, 94%, 100% { text-shadow: none; }
+  95% { text-shadow: 3px 0 rgba(255,0,0,0.7), -3px 0 rgba(0,0,255,0.7); }
+  97% { text-shadow: -2px 0 rgba(255,0,0,0.5), 2px 0 rgba(0,255,0,0.5); }
+}
+
+@keyframes glitch-block {
+  0%, 88%, 100% { transform: none; clip-path: none; opacity: 1; }
+  89% { transform: translate(-3px, 0) skewX(-1deg); clip-path: inset(20% 0 60% 0); }
+  90% { transform: translate(3px, 0); clip-path: inset(50% 0 30% 0); }
+  91% { transform: none; clip-path: none; opacity: 0.8; }
+  92% { opacity: 1; }
+}
+
+/* ── Flicker ──────────────────────────────────────────────────── */
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.35; }
+  94% { opacity: 1; }
+  95% { opacity: 0.7; }
+  96% { opacity: 1; }
+  97% { opacity: 0.2; }
+  98% { opacity: 1; }
+}
+
+@keyframes flicker-fast {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+  80% { opacity: 0.3; }
+  81% { opacity: 1; }
+  85% { opacity: 0.7; }
+  86% { opacity: 1; }
+}
+
+/* ── Pulse / Breathe ──────────────────────────────────────────── */
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,46,46,0.4); }
+  50%       { box-shadow: 0 0 0 8px rgba(255,46,46,0); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.3; transform: scale(0.8); }
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50%       { opacity: 0.8; transform: scale(1.04); }
+}
+
+@keyframes breathe-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(255,46,46,0.08), inset 0 0 20px rgba(255,46,46,0.01); }
+  50%       { box-shadow: 0 0 50px rgba(255,46,46,0.22), inset 0 0 40px rgba(255,46,46,0.04); }
+}
+
+/* ── Blink / Typewriter ───────────────────────────────────────── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+@keyframes typewriter {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+
+/* ── Camera Shake ─────────────────────────────────────────────── */
+@keyframes camera-shake {
+  0%, 100% { transform: none; }
+  10%  { transform: translate(-2px,  1px) rotate(-0.5deg); }
+  20%  { transform: translate( 2px, -1px) rotate( 0.3deg); }
+  30%  { transform: translate(-1px,  2px) rotate( 0.5deg); }
+  40%  { transform: translate( 1px, -2px) rotate(-0.3deg); }
+  50%  { transform: translate(-2px,  1px) rotate( 0.3deg); }
+  60%  { transform: translate( 2px,  1px) rotate(-0.5deg); }
+  70%  { transform: translate(-1px, -1px) rotate( 0.5deg); }
+  80%  { transform: translate( 1px,  2px) rotate(-0.3deg); }
+  90%  { transform: translate( 2px, -2px) rotate( 0.3deg); }
+}
+
+/* ── Float / Particle Drift ───────────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes particle-drift {
+  0%   { transform: translateY(100vh) translateX(0); opacity: 0; }
+  10%  { opacity: 0.6; }
+  90%  { opacity: 0.3; }
+  100% { transform: translateY(-10vh) translateX(30px); opacity: 0; }
+}
+
+/* ── Fade Animations ──────────────────────────────────────────── */
+@keyframes fade-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-up  { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── VHS Static ───────────────────────────────────────────────── */
+@keyframes vhs-roll {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
+
+/* ── Slide in ─────────────────────────────────────────────────── */
+@keyframes slide-in-right {
+  from { transform: translateX(40px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-out-right {
+  from { transform: translateX(0); opacity: 1; }
+  to   { transform: translateX(40px); opacity: 0; }
+}
+
+/* ── Utility Classes ──────────────────────────────────────────── */
+.glitch-text    { animation: glitch-text 7s infinite; }
+.glitch-rgb     { animation: glitch-rgb  9s infinite; }
+.glitch-block   { animation: glitch-block 8s infinite; }
+.flicker        { animation: flicker      8s infinite; }
+.flicker-fast   { animation: flicker-fast 3s infinite; }
+.breathe        { animation: breathe      4s ease-in-out infinite; }
+.float          { animation: float        6s ease-in-out infinite; }
+.pulse          { animation: pulse        2s infinite; }
+.pulse-dot      { animation: pulse-dot    2s ease-in-out infinite; }
+.cinematic      { font-family: var(--font-cinematic); font-style: italic; }
+.mono           { font-family: var(--font-mono); }
+.terminal-cursor::after { content: '_'; animation: blink 1s step-end infinite; color: var(--accent); }
+.glow-red       { box-shadow: 0 0 20px rgba(255,46,46,0.3); }
+.glow-red-text  { text-shadow: 0 0 20px rgba(255,46,46,0.5); }
+.shake          { animation: camera-shake 0.5s ease; }
+.audio-glow     { transform: scale(var(--audio-glow, 1)); }
+
+#landing-page, #room-page, #end-page {
+  transform: translate(var(--audio-vibration-x, 0px), var(--audio-vibration-y, 0px));
+}
+
+/* ── Glass Card ───────────────────────────────────────────────── */
+.glass-card {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ── Brutalist Card ───────────────────────────────────────────── */
+.brutalist-card {
+  background: #0d0d0d;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-left: 3px solid var(--accent);
+}
+
+/* ── VHS Overlay ──────────────────────────────────────────────── */
+.vhs-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(0,0,0,0.02) 1px,
+    rgba(0,0,0,0.02) 2px
+  );
+}
+
+/* ── Mobile ───────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  :root { --grain-opacity: 0.025; --scanline-opacity: 0.2; }
+}
